@@ -171,9 +171,71 @@ Mock 数据严格遵循 PPO/RLHF 算法逻辑：
 - **GAE**：`computeGAE()` 从后向前动态规划计算广义优势估计
 - **训练指标**：`generateTrainingMetrics()` 模拟 PPO 训练过程中的损失/奖励/KL 变化
 
+## 启动与部署
+
+### 前端
+
+```bash
+cd frontend
+
+# 安装依赖
+npm install
+
+# 启动开发服务器
+npm run dev
+
+# 类型检查
+npx vue-tsc --noEmit
+
+# 生产构建
+npm run build
+
+# 预览生产构建
+npm run preview
+```
+
+### 后端
+
+```bash
+cd backend
+
+# 安装依赖
+pip install -r requirements.txt
+
+# 启动开发服务器
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+# 运行全部测试
+pytest tests/ -v
+
+# 运行特定模块测试
+pytest tests/test_gae.py -v
+pytest tests/test_ppo_clip.py -v
+pytest tests/test_critic_loss.py -v
+pytest tests/test_kl_divergence.py -v
+```
+
+### 前后端联调
+
+1. 启动后端：`cd backend && uvicorn app.main:app --reload --port 8000`
+2. 启动前端：`cd frontend && npm run dev`
+3. 前端 `.env.development` 中配置：
+   ```env
+   VITE_API_BASE_URL=http://localhost:8000
+   VITE_WS_URL=ws://localhost:8000/ws/training
+   ```
+4. 访问 http://localhost:5173
+
+### 后端API文档
+
+启动后端后访问：
+- Swagger UI：http://localhost:8000/docs
+- ReDoc：http://localhost:8000/redoc
+
 ## 开发约定
 
 - 组件逻辑代码控制在 300-400 行以内
 - 动画使用 GSAP Timeline 管理，组件卸载时自动清理
 - 图表使用 ECharts Canvas 渲染模式，禁用内置动画（由 GSAP 控制）
 - 类型定义完整，严格模式（`strict: true` + `verbatimModuleSyntax`）
+- 后端算法实现严格遵循《算法开发参考.md》中的公式，禁止使用随机数据
