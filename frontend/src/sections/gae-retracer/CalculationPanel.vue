@@ -39,14 +39,13 @@ const gaeResult = computed(() => {
 })
 
 const typewriterLines = computed(() => {
-  if (!props.currentStep || !props.calculation) return []
-  const s = props.currentStep
+  if (!props.calculation) return []
   const c = props.calculation
   return [
-    `t=${s.t}  Token="${s.token}"`,
-    `δ_${s.t} = ${c.formulas.td_error.substitution}`,
+    `t=${c.step}  Token="${c.token}"`,
+    `δ_${c.step} = ${c.formulas.td_error.substitution}`,
     `    = ${c.formulas.td_error.result.toFixed(4)}`,
-    `A_${s.t} = ${c.formulas.gae.substitution}`,
+    `A_${c.step} = ${c.formulas.gae.substitution}`,
     `    = ${c.formulas.gae.result.toFixed(4)}`,
   ]
 })
@@ -59,7 +58,7 @@ const isPositive = computed(() => {
 
 <template>
   <div class="space-y-4 p-4 rounded-xl bg-bg-secondary border border-border">
-    <template v-if="currentStep && calculation">
+    <template v-if="calculation">
       <div class="space-y-3">
         <div class="space-y-1">
           <p class="text-xs text-text-weak uppercase tracking-wider">TD Error δ_t</p>

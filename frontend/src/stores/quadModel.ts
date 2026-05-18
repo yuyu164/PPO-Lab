@@ -41,13 +41,8 @@ export const useQuadModelStore = defineStore('quadModel', {
     async startGeneration() {
       this.reset()
       this.status = 'generating'
-      try {
-        this.episode = mockGenerationEpisode
-        this.steps = [...mockGenerationEpisode.steps]
-      } catch (error) {
-        this.status = 'idle'
-        throw error
-      }
+      this.episode = { ...mockGenerationEpisode, steps: [...mockGenerationEpisode.steps] }
+      this.steps = [...this.episode.steps]
     },
     pauseGeneration() { if (this.status === 'generating') this.status = 'paused' },
     resumeGeneration() { if (this.status === 'paused') this.status = 'generating' },

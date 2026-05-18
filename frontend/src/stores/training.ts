@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import type { TrainingHyperparams, TrainingMetrics, AchievementUnlock } from '@/types'
-import { mockTrainingPresets } from '@/mock/training'
+import { generateTrainingMetrics, mockTrainingPresets } from '@/mock/training'
 
 interface TrainingState {
   connectionStatus: 'disconnected' | 'connecting' | 'connected'

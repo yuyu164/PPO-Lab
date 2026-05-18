@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import type { GAEResult, StepCalculation, GAEStep } from '@/types'
-import { generateGAEMockData, mockStepCalculation } from '@/mock/gae'
+import { generateGAEMockData, generateStepCalculation } from '@/mock/gae'
 
 interface GAEState {
   status: 'idle' | 'tracing' | 'paused' | 'complete'
@@ -44,18 +44,28 @@ export const useGaeStore = defineStore('gae', {
     async startTrace() {
       this.status = 'tracing'
       this.currentTraceIndex = this.tokens.length - 1
-      try {
-        this.result = generateGAEMockData(this.tokens, this.rewards, this.values, this.gamma, this.lambda)
-      } catch (error) {
-        this.status = 'idle'
-        throw error
-      }
+      this.result = generateGAEMockData(
+        this.tokens,
+        this.rewards,
+        this.values,
+        this.gamma,
+        this.lambda,
+      )
     },
     pauseTrace() { if (this.status === 'tracing') this.status = 'paused' },
     async stepBackward() {
       if (this.status !== 'paused' && this.status !== 'tracing') return
       if (this.currentTraceIndex < 0) return
-      this.currentStepCalc = mockStepCalculation
+      const stepData = this.result?.steps.find(s => s.t === this.currentTraceIndex)
+      if (!stepData) {
+        this.currentTraceIndex--
+        if (this.currentTraceIndex < 0) this.status = 'complete'
+        return
+      }
+      const nextAdv = this.currentTraceIndex < this.result.steps.length - 1
+        ? this.result.advantages[this.currentTraceIndex + 1]
+        : 0
+      this.currentStepCalc = generateStepCalculation(stepData, this.gamma, this.lambda, nextAdv)
       this.currentTraceIndex--
       if (this.currentTraceIndex < 0) this.status = 'complete'
     },
@@ -69,11 +79,13 @@ export const useGaeStore = defineStore('gae', {
     setLambda(value: number) { this.lambda = Math.max(0.0, Math.min(1.0, value)) },
     setSpeed(speed: 1 | 2 | 4) { this.animationSpeed = speed },
     async computeGAE() {
-      try {
-        this.result = generateGAEMockData(this.tokens, this.rewards, this.values, this.gamma, this.lambda)
-      } catch (error) {
-        throw error
-      }
+      this.result = generateGAEMockData(
+        this.tokens,
+        this.rewards,
+        this.values,
+        this.gamma,
+        this.lambda,
+      )
     },
   },
 })

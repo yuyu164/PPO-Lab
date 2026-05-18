@@ -42,23 +42,19 @@ export const useKlStore = defineStore('kl', {
       await this.calculateKL()
     },
     async calculateKL() {
-      try {
-        const result = generateKLMockData(
-          this.beta,
-          this.refDistribution.mean,
-          this.refDistribution.std,
-          this.actorDistribution.mean,
-          this.actorDistribution.std
-        )
-        this.klDivergence = result.kl_divergence
-        this.overlapArea = result.overlap_area
-        this.refCurve = result.ref_curve.curve
-        this.actorCurve = result.actor_curve.curve
-        this.interpretation = result.interpretation
-        this.formula = result.formula
-      } catch (error) {
-        throw error
-      }
+      const result = generateKLMockData(
+        this.beta,
+        this.refDistribution.mean,
+        this.refDistribution.std,
+        this.actorDistribution.mean,
+        this.actorDistribution.std,
+      )
+      this.klDivergence = result.kl_divergence
+      this.overlapArea = result.overlap_area
+      this.refCurve = result.ref_curve.curve
+      this.actorCurve = result.actor_curve.curve
+      this.interpretation = result.interpretation
+      this.formula = result.formula
     },
     async applyPreset(preset: 'free' | 'standard' | 'strict') {
       const presets = {

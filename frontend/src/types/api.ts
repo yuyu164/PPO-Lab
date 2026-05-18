@@ -23,6 +23,7 @@ export interface NormalDistribution {
 
 export interface StepCalculation {
   step: number
+  token: string
   formulas: {
     td_error: { formula: string; substitution: string; result: number }
     gae: { formula: string; substitution: string; result: number }

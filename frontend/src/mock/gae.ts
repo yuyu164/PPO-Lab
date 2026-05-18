@@ -1,4 +1,4 @@
-import type { GAEResult, StepCalculation } from '@/types'
+import type { GAEResult, StepCalculation, GAEStep } from '@/types'
 import { computeGAE, getVarianceBiasInterpretation } from '@/utils/algorithm'
 
 export function generateGAEMockData(
@@ -45,19 +45,35 @@ export const defaultGAEMock = generateGAEMockData(
   0.95
 )
 
-export const mockStepCalculation: StepCalculation = {
-  step: 3,
-  formulas: {
-    td_error: {
-      formula: 'δ_t = r_t + γ·V_{t+1} - V_t',
-      substitution: 'δ_3 = -0.1000 + 0.99×0.8000 - 0.3000',
-      result: 0.3920,
+export function generateStepCalculation(
+  step: GAEStep,
+  gamma: number,
+  lambda: number,
+  nextAdvantage: number,
+): StepCalculation {
+  const tdSub = `δ_${step.t} = ${step.r_t.toFixed(4)} + ${gamma.toFixed(2)}×${step.V_next.toFixed(4)} - ${step.V_t.toFixed(4)}`
+  const gaeSub = `A_${step.t} = ${step.delta.toFixed(4)} + ${gamma.toFixed(2)}×${lambda.toFixed(2)}×${nextAdvantage.toFixed(4)}`
+
+  return {
+    step: step.t,
+    token: step.token,
+    formulas: {
+      td_error: {
+        formula: 'δ_t = r_t + γ·V_{t+1} - V_t',
+        substitution: tdSub,
+        result: step.delta,
+      },
+      gae: {
+        formula: 'A_t = δ_t + γ·λ·A_{t+1}',
+        substitution: gaeSub,
+        result: step.A_t,
+      },
     },
-    gae: {
-      formula: 'A_t = δ_t + γ·λ·A_{t+1}',
-      substitution: 'A_3 = 0.3920 + 0.99×0.95×1.1999',
-      result: 1.5205,
-    },
-  },
-  is_positive: true,
+    is_positive: step.is_positive,
+  }
 }
+
+export const mockStepCalculation: StepCalculation = generateStepCalculation(
+  { t: 3, token: 'an', r_t: -0.1, V_t: 0.3, V_next: 0.8, delta: 0.392, A_t: 1.5205, is_positive: true },
+  0.99, 0.95, 1.1999,
+)

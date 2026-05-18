@@ -12,8 +12,6 @@ import type { AchievementType } from '@/types'
 const store = useTrainingStore()
 const controller = useTrainingController()
 
-let simulationTimer: ReturnType<typeof setInterval> | null = null
-
 const allAchievementTypes: AchievementType[] = [
   'first_converge',
   'kl_stable',
@@ -22,50 +20,49 @@ const allAchievementTypes: AchievementType[] = [
   'master',
 ]
 
+let intervalId: ReturnType<typeof setInterval> | null = null
+
 function startSimulation() {
-  if (store.trainingStatus === 'running') return
-
-  store.trainingStatus = 'running'
-
-  simulationTimer = setInterval(() => {
+  if (intervalId) return
+  store.startTraining()
+  intervalId = setInterval(() => {
     if (store.trainingStatus !== 'running') return
-
     if (store.currentEpoch >= store.maxEpochs) {
-      store.trainingStatus = 'completed'
       stopSimulation()
+      store.trainingStatus = 'completed'
       return
     }
-
-    const nextEpoch = store.currentEpoch + 1
-    const metrics = generateTrainingMetrics(nextEpoch)
+    const epoch = store.currentEpoch + 1
+    const metrics = generateTrainingMetrics(epoch)
     store.handleEpochData(metrics)
   }, 500)
 }
 
 function stopSimulation() {
-  if (simulationTimer !== null) {
-    clearInterval(simulationTimer)
-    simulationTimer = null
+  if (intervalId) {
+    clearInterval(intervalId)
+    intervalId = null
   }
 }
 
 function handleStart() {
+  store.connect()
   startSimulation()
 }
 
 function handlePause() {
-  stopSimulation()
-  store.trainingStatus = 'paused'
+  store.pauseTraining()
 }
 
 function handleResume() {
+  store.resumeTraining()
   startSimulation()
 }
 
 function handleStep() {
   if (store.currentEpoch >= store.maxEpochs) return
-  const nextEpoch = store.currentEpoch + 1
-  const metrics = generateTrainingMetrics(nextEpoch)
+  const epoch = store.currentEpoch + 1
+  const metrics = generateTrainingMetrics(epoch)
   store.handleEpochData(metrics)
 }
 
