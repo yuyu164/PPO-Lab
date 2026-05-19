@@ -55,15 +55,16 @@ export const useGaeStore = defineStore('gae', {
     pauseTrace() { if (this.status === 'tracing') this.status = 'paused' },
     async stepBackward() {
       if (this.status !== 'paused' && this.status !== 'tracing') return
-      if (this.currentTraceIndex < 0) return
-      const stepData = this.result?.steps.find(s => s.t === this.currentTraceIndex)
+      if (this.currentTraceIndex < 0 || !this.result) return
+      const result = this.result
+      const stepData = result.steps.find(s => s.t === this.currentTraceIndex)
       if (!stepData) {
         this.currentTraceIndex--
         if (this.currentTraceIndex < 0) this.status = 'complete'
         return
       }
-      const nextAdv = this.currentTraceIndex < this.result.steps.length - 1
-        ? this.result.advantages[this.currentTraceIndex + 1]
+      const nextAdv = this.currentTraceIndex < result.steps.length - 1
+        ? result.advantages[this.currentTraceIndex + 1]
         : 0
       this.currentStepCalc = generateStepCalculation(stepData, this.gamma, this.lambda, nextAdv)
       this.currentTraceIndex--

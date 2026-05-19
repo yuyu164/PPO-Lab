@@ -6,13 +6,9 @@ import BetaSlider from '@/sections/kl-controller/BetaSlider.vue'
 import StatusPanel from '@/sections/kl-controller/StatusPanel.vue'
 import FormulaPanel from '@/sections/kl-controller/FormulaPanel.vue'
 import { useKlController } from '@/composables/useKlController'
-
-const {
-  onBetaChange,
-  applyPreset,
-} = useKlController()
-
 import { useKlStore } from '@/stores/kl'
+
+const { onBetaChange, applyPreset } = useKlController()
 const klStore = useKlStore()
 
 onMounted(async () => {
@@ -43,7 +39,7 @@ onMounted(async () => {
       <div class="space-y-6">
         <BetaSlider
           :model-value="klStore.beta"
-          @update:model-value="onBetaChange($event, false)"
+          @update:model-value="onBetaChange($event)"
           @preset-select="applyPreset($event)"
         />
         <StatusPanel :interpretation="klStore.interpretation" />

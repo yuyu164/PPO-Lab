@@ -5,6 +5,7 @@ import { generateKLMockData } from '@/mock/kl'
 interface KLState {
   beta: number
   refDistribution: { mean: number; std: number }
+  baseActorDistribution: { mean: number; std: number }
   actorDistribution: { mean: number; std: number }
   klDivergence: number
   overlapArea: number
@@ -14,11 +15,23 @@ interface KLState {
   formula: { expression: string; highlight: string; beta_value: number }
 }
 
+const REF = { mean: 0.0, std: 1.0 }
+const BASE_ACTOR = { mean: 0.5, std: 1.2 }
+
+function computeActorFromBeta(beta: number): { mean: number; std: number } {
+  const t = 1 - 1 / (1 + beta * 3)
+  return {
+    mean: BASE_ACTOR.mean * (1 - t) + REF.mean * t,
+    std: BASE_ACTOR.std * (1 - t) + REF.std * t,
+  }
+}
+
 export const useKlStore = defineStore('kl', {
   state: (): KLState => ({
     beta: 0.10,
-    refDistribution: { mean: 0.0, std: 1.0 },
-    actorDistribution: { mean: 0.3, std: 1.1 },
+    refDistribution: { ...REF },
+    baseActorDistribution: { ...BASE_ACTOR },
+    actorDistribution: computeActorFromBeta(0.10),
     klDivergence: 0,
     overlapArea: 0,
     refCurve: [],
@@ -39,6 +52,7 @@ export const useKlStore = defineStore('kl', {
   actions: {
     async setBeta(newBeta: number) {
       this.beta = Math.max(0.01, Math.min(1.0, newBeta))
+      this.actorDistribution = computeActorFromBeta(this.beta)
       await this.calculateKL()
     },
     async calculateKL() {
@@ -57,14 +71,9 @@ export const useKlStore = defineStore('kl', {
       this.formula = result.formula
     },
     async applyPreset(preset: 'free' | 'standard' | 'strict') {
-      const presets = {
-        free: { beta: 0.01, actor: { mean: 1.5, std: 0.8 } },
-        standard: { beta: 0.10, actor: { mean: 0.5, std: 1.2 } },
-        strict: { beta: 0.50, actor: { mean: 0.1, std: 1.05 } },
-      }
-      const p = presets[preset]
-      this.beta = p.beta
-      this.actorDistribution = p.actor
+      const betaMap = { free: 0.01, standard: 0.10, strict: 0.50 }
+      this.beta = betaMap[preset]
+      this.actorDistribution = computeActorFromBeta(this.beta)
       await this.calculateKL()
     },
   },

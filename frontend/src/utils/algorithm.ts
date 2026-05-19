@@ -56,24 +56,32 @@ export function computeGAE(
 }
 
 export function interpretBeta(beta: number, klDivergence: number): KLBetaInterpretation {
-  if (klDivergence > 1.0 || beta < 0.05) {
+  const penaltyStrength = beta * klDivergence
+  if (beta < 0.03) {
     return {
       status: 'warning',
       title: '偏离警告',
-      description: `Actor偏离Ref过远，KL散度=${klDivergence.toFixed(4)}，模型可能产生不可控输出。β=${beta}的弱约束不足以维持对齐。`
+      description: `β=${beta}过小，KL约束几乎失效，Actor可能偏离Ref过远产生不可控输出。建议增大β至0.05以上。`
     }
   }
-  if (klDivergence < 0.05 || beta > 0.20) {
+  if (klDivergence > 1.0) {
+    return {
+      status: 'warning',
+      title: '偏离警告',
+      description: `KL散度=${klDivergence.toFixed(4)}过大，Actor偏离Ref过远，模型可能产生不可控输出。建议增大β加强约束。`
+    }
+  }
+  if (beta > 0.50 && klDivergence < 0.02) {
     return {
       status: 'locked',
       title: '过度约束',
-      description: `Actor几乎完全复制Ref，KL散度=${klDivergence.toFixed(4)}，模型缺乏探索能力。β=${beta}的强约束抑制了奖励优化空间。`
+      description: `β=${beta}的强约束使Actor非常接近Ref（KL散度=${klDivergence.toFixed(4)}），模型探索空间有限，抑制了奖励优化。`
     }
   }
   return {
     status: 'optimal',
     title: '理想状态',
-    description: `Actor在探索与约束之间取得平衡，KL散度=${klDivergence.toFixed(4)}，模型有适度自由度且保持对齐。β=${beta}是PPO-RLHF的推荐设置。`
+    description: `β=${beta}使Actor在探索与约束之间取得平衡（KL散度=${klDivergence.toFixed(4)}，惩罚项β·KL=${penaltyStrength.toFixed(4)}），模型有适度自由度且保持对齐。`
   }
 }
 
