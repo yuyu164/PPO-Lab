@@ -33,7 +33,7 @@ apiClient.interceptors.request.use(
 
 apiClient.interceptors.response.use(
   (response: AxiosResponse<ApiResponse>) => {
-    const { success, data, error } = response.data
+    const { success, data: _data, error } = response.data
     if (!success) {
       const apiError: ApiError = error || { code: 'UNKNOWN_ERROR', message: '未知错误' }
       console.error(`[API Error] ${apiError.code}: ${apiError.message}`)

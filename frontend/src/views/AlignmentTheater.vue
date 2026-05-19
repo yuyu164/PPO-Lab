@@ -18,7 +18,7 @@ const alignedMessages = [
 const rating = ref(0)
 const activeStage = ref(0)
 
-function onRated(value: number) {
+function onRated(_value: number) {
   activeStage.value = 1
 }
 

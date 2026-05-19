@@ -30,7 +30,7 @@ const tracer = useGaeTracer()
           :current-trace-index="store.currentTraceIndex"
         />
         <CalculationPanel
-          :current-step="tracer.currentTraceStep"
+          :current-step="tracer.currentTraceStep.value"
           :calculation="store.currentStepCalc"
         />
       </div>
@@ -39,12 +39,12 @@ const tracer = useGaeTracer()
         <ParamControls
           :gamma="store.gamma"
           :lambda="store.lambda"
-          :speed="tracer.speed"
-          :is-playing="tracer.traceState === 'tracing'"
-          :can-start="tracer.canStart"
-          :can-pause="tracer.canPause"
-          :can-resume="tracer.canResume"
-          :can-reset="tracer.canReset"
+          :speed="tracer.speed.value"
+          :is-playing="tracer.traceState.value === 'tracing'"
+          :can-start="tracer.canStart.value"
+          :can-pause="tracer.canPause.value"
+          :can-resume="tracer.canResume.value"
+          :can-reset="tracer.canReset.value"
           @update:gamma="store.setGamma"
           @update:lambda="store.setLambda"
           @update:speed="tracer.setSpeed"

@@ -6,35 +6,24 @@ import TokenSequence from '@/sections/quad-model/TokenSequence.vue'
 import StepExplanation from '@/sections/quad-model/StepExplanation.vue'
 import StepControls from '@/sections/quad-model/StepControls.vue'
 import { useQuadModelStateMachine } from '@/composables/useQuadModelStateMachine'
+import { useQuadModelStore } from '@/stores/quadModel'
 
 const {
   state,
   currentTokenIndex,
   currentSubStep,
-  canStart,
-  canPause,
-  canReset,
-  canStepForward,
-  hasMoreSteps,
   currentStepData,
   subSteps,
   startGeneration,
   pause,
-  resume,
   stepForward,
   reset,
 } = useQuadModelStateMachine()
 
+const store = useQuadModelStore()
+
 const isPlaying = computed(() => state.value === 'generating')
 const isComplete = computed(() => state.value === 'complete')
-const steps = computed(() => {
-  if (!currentStepData.value) return []
-  const store = useQuadModelStateMachine()
-  return []
-})
-
-import { useQuadModelStore } from '@/stores/quadModel'
-const store = useQuadModelStore()
 const displaySteps = computed(() => store.steps.slice(0, currentTokenIndex.value))
 </script>
 

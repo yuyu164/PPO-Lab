@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import TokenChip from '@/components/TokenChip.vue'
 import type { GAEStep } from '@/types'
 
@@ -12,7 +12,6 @@ defineEmits<{
   tokenClick: [index: number]
 }>()
 
-const barRef = ref<HTMLElement | null>(null)
 
 const indicatorLeft = computed(() => {
   if (props.currentTraceIndex < 0 || props.steps.length === 0) return '0%'
@@ -22,7 +21,7 @@ const indicatorLeft = computed(() => {
 
 <template>
   <div class="relative">
-    <div ref="barRef" class="flex items-center gap-2 flex-wrap py-2">
+    <div class="flex items-center gap-2 flex-wrap py-2">
       <TokenChip
         v-for="(step, index) in steps"
         :key="index"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { useAnimation } from '@/composables/useAnimation'
 
 const props = defineProps<{
@@ -8,7 +8,7 @@ const props = defineProps<{
   rating: number
 }>()
 
-const { gsap, createTimeline } = useAnimation()
+const { createTimeline } = useAnimation()
 
 const displayedTexts = ref<string[]>(props.messages.map(() => ''))
 const typingComplete = ref(false)

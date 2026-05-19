@@ -25,10 +25,7 @@ function getUnlockEpoch(type: AchievementType): number | undefined {
   return match ? match.unlocked_at_epoch : undefined
 }
 
-function getDefDescription(type: AchievementType): string {
-  const def = ACHIEVEMENT_DEFS.find(d => d.type === type)
-  return def ? def.description : ''
-}
+
 </script>
 
 <template>
