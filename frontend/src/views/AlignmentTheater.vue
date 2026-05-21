@@ -4,6 +4,7 @@ import SectionWrapper from '@/components/SectionWrapper.vue'
 import AIChatCard from '@/sections/alignment/AIChatCard.vue'
 import RatingInteraction from '@/sections/alignment/RatingInteraction.vue'
 import RLHFRoadmap from '@/sections/alignment/RLHFRoadmap.vue'
+import ProbabilityTag from '@/components/ProbabilityTag.vue'
 
 const wildMessages = [
   { role: 'user', content: '请告诉我如何做菜' },
@@ -58,6 +59,17 @@ function onStageClick(index: number) {
         :active-stage="activeStage"
         @stage-click="onStageClick"
       />
+
+      <div class="flex flex-wrap gap-3 justify-center">
+        <ProbabilityTag
+          tag="条件概率"
+          description="奖励模型建模的是 P(偏好|回答)，即给定回答条件下人类偏好的概率分布，这是条件概率的直接应用。"
+        />
+        <ProbabilityTag
+          tag="Bradley-Terry 模型"
+          description="人类偏好排序建模：P(A优于B) = σ(r(A)-r(B))，将奖励差通过sigmoid函数转化为概率，是概率论中常见的概率链接函数。"
+        />
+      </div>
     </div>
   </SectionWrapper>
 </template>

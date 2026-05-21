@@ -36,5 +36,9 @@ watch(() => [props.formula, props.highlight, props.highlightValue], renderFormul
 .formula-display :deep(.katex) {
   font-size: 1.1em;
   color: #F1F5F9;
+  white-space: nowrap;
+}
+.formula-display :deep(.katex-html) {
+  white-space: nowrap;
 }
 </style>

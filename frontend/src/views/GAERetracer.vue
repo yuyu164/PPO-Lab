@@ -5,6 +5,7 @@ import AdvantageChart from '@/sections/gae-retracer/AdvantageChart.vue'
 import CalculationPanel from '@/sections/gae-retracer/CalculationPanel.vue'
 import ParamControls from '@/sections/gae-retracer/ParamControls.vue'
 import VarianceBiasIndicator from '@/sections/gae-retracer/VarianceBiasIndicator.vue'
+import ProbabilityTag from '@/components/ProbabilityTag.vue'
 import { useGaeStore } from '@/stores/gae'
 import { useGaeTracer } from '@/composables/useGaeTracer'
 
@@ -53,6 +54,20 @@ const tracer = useGaeTracer()
           @step="tracer.stepOnce"
           @reset="tracer.reset"
         />
+        <div class="flex flex-wrap gap-3">
+          <ProbabilityTag
+            tag="偏差-方差权衡"
+            description="GAE中λ控制偏差与方差的平衡：λ→0高偏差低方差（类似TD），λ→1低偏差高方差（类似MC），这是概率论中估计量的核心性质。"
+          />
+          <ProbabilityTag
+            tag="马尔可夫性"
+            description="GAE依赖马尔可夫假设：未来状态只依赖当前状态，与历史无关，即 P(s₊₁|sₜ,aₜ,...) = P(s₊₁|sₜ,aₜ)。"
+          />
+          <ProbabilityTag
+            tag="递推期望"
+            description="GAE递推公式 Aₜ = δₜ + γλAₜ₊₁ 本质是条件期望的递推计算，利用动态规划求解，是概率论中递推思想的体现。"
+          />
+        </div>
         <VarianceBiasIndicator
           v-if="store.result?.variance_bias"
           :lambda="store.lambda"
